@@ -1245,8 +1245,8 @@ select.form-control {
 
 .share-btn {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: var(--space-8);
+    right: var(--space-16);
     display: flex;
     align-items: center;
     gap: var(--space-8);
