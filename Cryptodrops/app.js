@@ -980,6 +980,14 @@ function showAirdropDetail(airdropId) {
         </div>
       </div>
 
+${airdrop.airdropLink ? `
+      <div class="detail-actions" style="margin: 24px 0; text-align: center;">
+        <a href="${airdrop.airdropLink}" target="_blank" class="btn btn--primary" style="text-decoration: none; font-size: 20px; padding: 18px 40px; font-weight: 700;">
+          🚀 Join Now
+        </a>
+      </div>
+      ` : ''}
+
       <div class="detail-requirements">
         <h3>Step-by-Step Guide</h3>
         <div class="steps-guide">
