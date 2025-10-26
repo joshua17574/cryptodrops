@@ -106,25 +106,25 @@ export class Utils {
 
   static formatCategory(category) {
     const categories = {
-      'social': '📱 Social',
-      'bounty-platforms': '🎯 Bounty Platforms',
-      'testnet': '🧪 Testnet',
-      'mainnet': '🌐 Mainnet',
-      'fill-form': '📝 Fill The Form',
-      'role': '👤 Getting a role',
-      'liquidity': '💧 Liquidity',
-      'mint-nft': '🎨 Mint NFT',
-      'gaming': '🎮 Gaming',
-      'staking': '🔒 Staking',
-      'trading': '📊 Trading',
-      'node': '🖥️ Node',
-      'depin': '📡 DePIN',
-      'mint-domain': '🌍 Mint Domain',
-      'hold': '💎 Hold',
-      'ambassador': '🎖️ Ambassador program',
-      'wallet-airdrop': '👛 Wallet Airdrop Status',
-      'contract-deployment': '📜 Contract Deployment',
-      'taskbased': '✅ Taskbased'
+      'social': 'Social',
+      'bounty-platforms': 'Bounty Platforms',
+      'testnet': 'Testnet',
+      'mainnet': 'Mainnet',
+      'fill-form': 'Fill The Form',
+      'role': 'Getting a role',
+      'liquidity': 'Liquidity',
+      'mint-nft': 'Mint NFT',
+      'gaming': 'Gaming',
+      'staking': 'Staking',
+      'trading': 'Trading',
+      'node': 'Node',
+      'depin': 'DePIN',
+      'mint-domain': 'Mint Domain',
+      'hold': 'Hold',
+      'ambassador': 'Ambassador program',
+      'wallet-airdrop': 'Wallet Airdrop Status',
+      'contract-deployment': 'Contract Deployment',
+      'taskbased': 'Taskbased'
     };
     return categories[category?.toLowerCase()] || category;
   }
