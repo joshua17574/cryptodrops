@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - CryptoDrops</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 30px auto 50px;
+            padding: 20px;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .admin-form {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+        .form-group textarea {
+            min-height: 100px;
+        }
+        .requirements-list {
+            margin-top: 10px;
+        }
+        .requirement-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .admin-table {
+            background: white;
+            border-radius: 12px;
+            overflow-x: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .admin-table table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+        .admin-table th,
+        .admin-table td {
+            padding: 25px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 18px;
+        }
+        .admin-table th {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
+            font-weight: 600;
+            font-size: 19px;
+        }
+        .admin-table th:last-child,
+        .admin-table td:last-child {
+            text-align: right;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            min-width: 220px;
+        }
+        .btn-small {
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            border: 2px solid transparent;
+        }
+        .btn-small:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+        .admin-table .btn-small:not(.btn--outline) {
+            background: white;
+            color: #6366f1;
+            border: 2px solid #6366f1;
+        }
+        .admin-table .btn-small:not(.btn--outline):hover {
+            background: #6366f1;
+            color: white;
+        }
+        .admin-table .btn--outline {
+            background: #ef4444;
+            color: white;
+            border: 2px solid #ef4444;
+        }
+        .admin-table .btn--outline:hover {
+            background: #dc2626;
+            border-color: #dc2626;
+        }
+        .login-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .hidden {
+            display: none;
+        }
+        .logo-icon {
+            animation: diamondFloat 3s ease-in-out infinite, diamondRotate 4s linear infinite, diamondGlow 2s ease-in-out infinite;
+            display: inline-block;
+        }
+        @keyframes diamondFloat {
+            0%, 100% {
+                transform: translateY(0px) scale(1);
+            }
+            50% {
+                transform: translateY(-10px) scale(1.1);
+            }
+        }
+        @keyframes diamondRotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        @keyframes diamondGlow {
+            0%, 100% {
+                filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.5));
+            }
+            50% {
+                filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.9)) drop-shadow(0 0 30px rgba(99, 102, 241, 0.6));
+            }
+        }
+        .logo-text {
+            font-size: 28px !important;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="container" style="justify-content: center;">
+            <div class="nav-brand">
+                <div class="logo">
+                    <div class="logo-icon">💎</div>
+                    <span class="logo-text">CryptoDrops</span>
+                </div>
+            </div>
+            <div class="nav-actions" style="position: absolute; right: 20px;">
+                <button class="btn btn--outline" id="logoutBtn" style="display: none;">Logout</button>
+            </div>
+        </nav>
+    </header>
+
+    <div id="loginSection" class="login-container">
+        <h2>Admin Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="loginUsername" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" required>
+            </div>
+            <button type="submit" class="btn btn--primary" style="width: 100%;">Login</button>
+        </form>
+    </div>
+
+    <div id="adminPanel" class="admin-container hidden">
+        <div class="admin-header">
+            <h1>Manage Airdrops</h1>
+            <button class="btn btn--primary" id="showFormBtn" style="padding: 16px 32px; font-size: 18px; font-weight: 600;">Add New Airdrop</button>
+        </div>
+
+        <div id="airdropForm" class="admin-form hidden">
+            <form id="airdropFormElement">
+                <input type="hidden" id="airdropId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Name *</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Blockchain *</label>
+                        <input type="text" id="blockchain" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Description *</label>
+                    <textarea id="description" required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Type *</label>
+                        <select id="type" required>
+                            <option value="social">📱 Social</option>
+                            <option value="bounty-platforms">🎯 Bounty Platforms</option>
+                            <option value="testnet">🧪 Testnet</option>
+                            <option value="mainnet">🌐 Mainnet</option>
+                            <option value="fill-form">📝 Fill The Form</option>
+                            <option value="role">👤 Getting a role</option>
+                            <option value="liquidity">💧 Liquidity</option>
+                            <option value="mint-nft">🎨 Mint NFT</option>
+                            <option value="gaming">🎮 Gaming</option>
+                            <option value="staking">🔒 Staking</option>
+                            <option value="trading">📊 Trading</option>
+                            <option value="node">🖥️ Node</option>
+                            <option value="depin">📡 DePIN</option>
+                            <option value="mint-domain">🌍 Mint Domain</option>
+                            <option value="hold">💎 Hold</option>
+                            <option value="ambassador">🎖️ Ambassador program</option>
+                            <option value="wallet-airdrop">👛 Wallet Airdrop Status</option>
+                            <option value="contract-deployment">📜 Contract Deployment</option>
+                            <option value="taskbased">✅ Taskbased</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Status *</label>
+                        <select id="status" required>
+                            <option value="active">Active</option>
+                            <option value="upcoming">Upcoming</option>
+                            <option value="ended">Ended</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Project Logo URL</label>
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <input type="url" id="logoUrl" placeholder="https://example.com/logo.png" style="flex: 1;">
+                        <img id="logoPreview" src="" alt="Logo preview" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; display: none; border: 2px solid #ddd;">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Raise/Funds</label>
+                        <input type="text" id="totalValue" placeholder="$100,000,000">
+                    </div>
+                    <div class="form-group">
+                        <label>Estimated Reward</label>
+                        <input type="text" id="estimatedReward" placeholder="$500-$2000">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" id="startDate">
+                    </div>
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" id="endDate">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Airdrop Link (Join Now URL) *</label>
+                    <input type="url" id="airdropLink" placeholder="https://example.com/airdrop" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Website</label>
+                        <input type="url" id="website">
+                    </div>
+                    <div class="form-group">
+                        <label>Twitter</label>
+                        <input type="url" id="twitter">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Discord</label>
+                        <input type="url" id="discord">
+                    </div>
+                    <div class="form-group">
+                        <label>Telegram</label>
+                        <input type="url" id="telegram">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Step-by-Step Guide</label>
+                    <div id="stepsContainer" style="display: flex; flex-direction: column; gap: 20px; margin-top: 10px;">
+                        <!-- Steps will be added here dynamically -->
+                    </div>
+                    <button type="button" id="addStepBtn" class="btn" style="margin-top: 15px; background: #10b981; color: white; border: none;">
+                        + Add Step
+                    </button>
+                </div>
+
+                <div style="display: flex; gap: 30px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="featured" style="width: auto; margin: 0;"> Featured
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="potential" style="width: auto; margin: 0;"> Potential
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="confirmed" style="width: auto; margin: 0;"> Confirmed
+                    </label>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn--primary">Save Airdrop</button>
+                    <button type="button" class="btn btn--outline" id="cancelFormBtn">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="admin-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Logo</th>
+                        <th>Name</th>
+                        <th>Blockchain</th>
+                        <th>Type</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="airdropsList"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>
