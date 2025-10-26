@@ -877,7 +877,7 @@ select.form-control {
 
 .search-input {
     width: 100%;
-    padding: var(--space-12) var(--space-16);
+    padding: var(--space-8) var(--space-16);
     font-size: var(--font-size-base);
     border: 2px solid var(--color-border);
     border-radius: var(--radius-full);
@@ -1608,7 +1608,7 @@ select.form-control {
 }
 
     .search-filters .search-container {
-        flex: 0 1 500px;
+        flex: 0 1 300px;
         max-width: 500px;
     }
 
@@ -2617,17 +2617,40 @@ select.form-control {
     }
 
     .filters-section {
-        padding: var(--space-12);
+        padding: var(--space-8);
         margin-bottom: var(--space-16);
     }
 
     .search-filters {
-        gap: var(--space-12);
+        gap: var(--space-8);
     }
 
     .filter-controls {
-        margin-top: var(--space-12);
-        padding-top: var(--space-12);
+        margin-top: var(--space-8);
+        padding-top: var(--space-8);
+        gap: var(--space-8);
+    }
+
+    .filter-controls .form-control {
+        padding: var(--space-6) var(--space-10);
+        font-size: var(--font-size-sm);
+        flex: 1 1 auto;
+        min-width: 120px;
+    }
+
+    .filter-toggle-btn {
+        padding: var(--space-6) var(--space-12);
+        font-size: var(--font-size-sm);
+    }
+
+    .search-input {
+        padding: var(--space-6) var(--space-12);
+        font-size: var(--font-size-sm);
+    }
+
+    .search-filters .search-container {
+        flex: 0 1 150px;
+        max-width: 100%;
     }
 }
 
