@@ -71,14 +71,22 @@ export class ModalManager {
             <p class="stat-value">${Utils.formatCategory(airdrop.category)}</p>
           </div>
         </div>
-        
- ${airdrop.airdropLink ? `
+
+        ${airdrop.airdropLink ? `
         <div class="detail-actions" style="margin: 24px 0; text-align: center;">
           <a href="${airdrop.airdropLink}" target="_blank" class="btn btn--primary" style="text-decoration: none; font-size: 20px; padding: 18px 40px; font-weight: 700;">
             🚀 Join Now
           </a>
         </div>
         ` : ''}
+
+        <div class="detail-requirements">
+          <h3>Step-by-Step Guide</h3>
+          <div class="steps-guide">
+            ${Array.isArray(airdrop.requirements) && airdrop.requirements.length > 0 ? airdrop.requirements.map((req, index) => {
+              const isNewFormat = typeof req === 'object' && req.description;
+              const description = isNewFormat ? req.description : req;
+              const image = isNewFormat ? req.image : '';
               
               return `
               <div class="step-guide-item">
@@ -125,14 +133,6 @@ export class ModalManager {
           </div>
         </div>
         ` : ''}
-
-        <div class="detail-actions">
-          ${airdrop.airdropLink ? `
-          <a href="${airdrop.airdropLink}" target="_blank" class="btn btn--primary" style="text-decoration: none; font-size: 20px; padding: 18px 40px; font-weight: 700;">
-            🚀 Join Now
-          </a>
-          ` : ''}
-        </div>
       </div>
     `;
 
