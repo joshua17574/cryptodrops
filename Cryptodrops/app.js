@@ -1025,13 +1025,6 @@ ${airdrop.airdropLink ? `
       </div>
       ` : ''}
 
-      <div class="detail-actions">
-        ${airdrop.airdropLink ? `
-        <a href="${airdrop.airdropLink}" target="_blank" class="btn btn--primary btn--lg" style="text-decoration: none;">
-          🚀 Join Now
-        </a>
-        ` : ''}
-      </div>
     </div>
   `;
 
