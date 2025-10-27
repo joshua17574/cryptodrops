@@ -24,6 +24,19 @@ services:
       - key: RESEND_FROM_EMAIL
         sync: false
 
+  - type: worker
+    name: cryptodrops-ping
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: node ping.js
+    envVars:
+      - key: PING_URL
+        value: https://cryptodrops.onrender.com
+      - key: PING_INTERVAL
+        value: 840000
+
 databases:
   - name: cryptodrops-db
     plan: free
