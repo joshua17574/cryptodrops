@@ -184,9 +184,9 @@ export class Utils {
   }
 
   /**
-   * Convert URLs in text to clickable hyperlinks
+   * Convert URLs in text to clickable hyperlinks and preserve line breaks
    * @param {string} text - Text that may contain URLs
-   * @returns {string} HTML string with clickable links
+   * @returns {string} HTML string with clickable links and preserved formatting
    */
   static linkifyText(text) {
     if (!text) return '';
@@ -200,9 +200,10 @@ export class Utils {
     let match;
     
     while ((match = urlRegex.exec(text)) !== null) {
-      // Add text before the URL (escaped)
+      // Add text before the URL (escaped and with line breaks preserved)
       if (match.index > lastIndex) {
-        parts.push(this.escapeHtml(text.substring(lastIndex, match.index)));
+        const textPart = this.escapeHtml(text.substring(lastIndex, match.index));
+        parts.push(textPart.replace(/\n/g, '<br>'));
       }
       
       // Add the URL as a clickable link
@@ -217,9 +218,10 @@ export class Utils {
       lastIndex = match.index + url.length;
     }
     
-    // Add any remaining text after the last URL
+    // Add any remaining text after the last URL (with line breaks preserved)
     if (lastIndex < text.length) {
-      parts.push(this.escapeHtml(text.substring(lastIndex)));
+      const textPart = this.escapeHtml(text.substring(lastIndex));
+      parts.push(textPart.replace(/\n/g, '<br>'));
     }
     
     return parts.join('');
