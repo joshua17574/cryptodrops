@@ -33,7 +33,7 @@ services:
     startCommand: node ping.js
     envVars:
       - key: PING_URL
-        value: https://cryptodrops.onrender.com
+        value: https://cryptodrops.onrender.com/api/health
       - key: PING_INTERVAL
         value: 840000
 
