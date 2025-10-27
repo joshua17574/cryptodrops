@@ -182,4 +182,46 @@ export class Utils {
     // Escape HTML
     return this.escapeHtml(sanitized);
   }
+
+  /**
+   * Convert URLs in text to clickable hyperlinks
+   * @param {string} text - Text that may contain URLs
+   * @returns {string} HTML string with clickable links
+   */
+  static linkifyText(text) {
+    if (!text) return '';
+    
+    // Regular expression to match URLs
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    
+    // Split text into parts (URLs and non-URLs)
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+    
+    while ((match = urlRegex.exec(text)) !== null) {
+      // Add text before the URL (escaped)
+      if (match.index > lastIndex) {
+        parts.push(this.escapeHtml(text.substring(lastIndex, match.index)));
+      }
+      
+      // Add the URL as a clickable link
+      const url = match[0];
+      const sanitizedUrl = this.sanitizeUrl(url);
+      if (sanitizedUrl) {
+        parts.push(`<a href="${sanitizedUrl}" target="_blank" rel="noopener noreferrer" class="inline-link">${this.escapeHtml(url)}</a>`);
+      } else {
+        parts.push(this.escapeHtml(url));
+      }
+      
+      lastIndex = match.index + url.length;
+    }
+    
+    // Add any remaining text after the last URL
+    if (lastIndex < text.length) {
+      parts.push(this.escapeHtml(text.substring(lastIndex)));
+    }
+    
+    return parts.join('');
+  }
 }
