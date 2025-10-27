@@ -87,16 +87,25 @@ export class ModalManager {
               const isNewFormat = typeof req === 'object' && req.description;
               const description = isNewFormat ? req.description : req;
               const image = isNewFormat ? req.image : '';
+              const link = isNewFormat ? req.link : '';
               
               return `
               <div class="step-guide-item">
                 <div class="step-header">
                   <div class="step-number">Step ${index + 1}</div>
-                  <input type="checkbox" id="req-${index}" class="step-checkbox" />
+                  <input type="checkbox" id="req-${airdrop.id}-${index}" class="step-checkbox" />
                 </div>
                 <div class="step-content">
-                  <label for="req-${index}" class="step-description">${description}</label>
+                  <div class="step-description" data-checkbox-id="req-${airdrop.id}-${index}">${Utils.linkifyText(description)}</div>
                   ${image ? `<img src="${image}" alt="Step ${index + 1}" class="step-image" />` : ''}
+                  ${link ? `<a href="${link}" target="_blank" rel="noopener noreferrer" class="step-link-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                      <polyline points="15 3 21 3 21 9"></polyline>
+                      <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                    Visit Link
+                  </a>` : ''}
                 </div>
               </div>
               `;
@@ -138,6 +147,24 @@ export class ModalManager {
 
     this.modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
+    
+    // Add click handlers for step descriptions to toggle checkboxes
+    setTimeout(() => {
+      const stepDescriptions = this.modalBody.querySelectorAll('.step-description');
+      stepDescriptions.forEach(desc => {
+        desc.addEventListener('click', (e) => {
+          // Don't toggle checkbox if clicking on a link
+          if (e.target.tagName === 'A' || e.target.closest('a')) {
+            return;
+          }
+          const checkboxId = desc.getAttribute('data-checkbox-id');
+          const checkbox = document.getElementById(checkboxId);
+          if (checkbox) {
+            checkbox.checked = !checkbox.checked;
+          }
+        });
+      });
+    }, 0);
   }
 
   close() {
