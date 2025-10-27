@@ -2927,8 +2927,8 @@ select.form-control {
     font-size: 16px;
     line-height: 1.7;
     color: var(--color-slate-800);
-    cursor: pointer;
     font-weight: 500;
+    cursor: pointer;
 }
 
 img.step-image {
@@ -2972,4 +2972,56 @@ img.step-image {
     text-decoration: line-through;
     opacity: 0.6;
     color: var(--color-slate-600);
+}
+
+.step-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+    margin-top: 8px;
+    width: fit-content;
+}
+
+.step-link-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+}
+
+.step-link-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.step-link-btn svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.step-description .inline-link {
+    color: #6366f1;
+    text-decoration: none;
+    font-weight: 600;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    word-break: break-all;
+}
+
+.step-description .inline-link:hover {
+    color: #4f46e5;
+    border-bottom-color: #4f46e5;
+}
+
+.step-description .inline-link:active {
+    color: #3730a3;
 }
