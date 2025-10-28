@@ -97,7 +97,15 @@ export class ModalManager {
                 </div>
                 <div class="step-content">
                   <div class="step-description" data-checkbox-id="req-${airdrop.id}-${index}">${Utils.linkifyText(description)}</div>
-                  ${image ? `<img src="${image}" alt="Step ${index + 1}" class="step-image" />` : ''}
+                  ${image ? `
+                    <div class="step-image-container">
+                      <img src="${image}" alt="Step ${index + 1}" class="step-image" data-lightbox="true" />
+                      <div class="tap-to-enlarge-hint">
+                        <span class="enlarge-icon">🔍</span>
+                        <span class="enlarge-text">Tap to enlarge photo</span>
+                      </div>
+                    </div>
+                  ` : ''}
                   ${link ? `<a href="${link}" target="_blank" rel="noopener noreferrer" class="step-link-btn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
@@ -164,6 +172,9 @@ export class ModalManager {
           }
         });
       });
+
+      // Add click handlers for lightbox images
+      this.initializeLightbox();
     }, 0);
   }
 
@@ -232,5 +243,69 @@ export class ModalManager {
         this.toastManager.error('Failed to copy link');
       });
     }
+  }
+
+  initializeLightbox() {
+    const stepImages = this.modalBody.querySelectorAll('.step-image[data-lightbox="true"]');
+    
+    stepImages.forEach(img => {
+      img.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.openLightbox(img.src, img.alt);
+      });
+      
+      img.style.cursor = 'pointer';
+    });
+  }
+
+  openLightbox(imageSrc, imageAlt) {
+    let lightbox = document.getElementById('image-lightbox');
+    
+    if (!lightbox) {
+      lightbox = document.createElement('div');
+      lightbox.id = 'image-lightbox';
+      lightbox.className = 'image-lightbox';
+      lightbox.innerHTML = `
+        <div class="lightbox-overlay"></div>
+        <div class="lightbox-content">
+          <button class="lightbox-close" aria-label="Close lightbox">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+          <img class="lightbox-image" src="" alt="" />
+        </div>
+      `;
+      document.body.appendChild(lightbox);
+      
+      const closeBtn = lightbox.querySelector('.lightbox-close');
+      const overlay = lightbox.querySelector('.lightbox-overlay');
+      
+      const closeLightbox = () => {
+        lightbox.classList.remove('active');
+        setTimeout(() => {
+          lightbox.style.display = 'none';
+        }, 300);
+      };
+      
+      closeBtn.addEventListener('click', closeLightbox);
+      overlay.addEventListener('click', closeLightbox);
+      
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+          closeLightbox();
+        }
+      });
+    }
+    
+    const lightboxImage = lightbox.querySelector('.lightbox-image');
+    lightboxImage.src = imageSrc;
+    lightboxImage.alt = imageAlt;
+    
+    lightbox.style.display = 'flex';
+    setTimeout(() => {
+      lightbox.classList.add('active');
+    }, 10);
   }
 }
