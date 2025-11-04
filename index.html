@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elegant Dresses - Premium Women's Fashion</title>
+    <meta name="description" content="Shop the latest collection of elegant dresses for every occasion">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="#" class="logo">
+                    <i class="fas fa-gem"></i>
+                    Elegant Dresses
+                </a>
+
+                <div class="nav-search">
+                    <input type="text" id="search-input" placeholder="Search dresses..." aria-label="Search products">
+                    <i class="fas fa-search"></i>
+                </div>
+
+                <div class="nav-icons">
+                    <button class="nav-icon" id="wishlist-btn" aria-label="Wishlist">
+                        <i class="fas fa-heart"></i>
+                        <span class="badge" id="wishlist-count">0</span>
+                    </button>
+                    <button class="nav-icon" id="cart-btn" aria-label="Shopping cart">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="badge" id="cart-count">0</span>
+                    </button>
+                    <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#shop">Shop</a></li>
+                <li><a href="#new-arrivals">New Arrivals</a></li>
+                <li><a href="#sale">Sale</a></li>
+                <li><a href="#testimonials">Reviews</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="animate-text">Discover Your</span>
+                <span class="animate-text delay-1">Perfect Dress</span>
+            </h1>
+            <p class="hero-subtitle animate-text delay-2">Elegance meets style in our curated collection</p>
+            <button class="btn btn-primary animate-text delay-3" onclick="document.getElementById('shop').scrollIntoView({behavior: 'smooth'})">
+                Shop Now <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </section>
+
+    <!-- Filter Section -->
+    <section class="filters" id="shop">
+        <div class="container">
+            <h2 class="section-title">Our Collection</h2>
+
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label>Category:</label>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-category="all">All</button>
+                        <button class="filter-btn" data-category="casual">Casual</button>
+                        <button class="filter-btn" data-category="formal">Formal</button>
+                        <button class="filter-btn" data-category="evening">Evening</button>
+                        <button class="filter-btn" data-category="summer">Summer</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label for="price-range">Price Range: $<span id="price-value">200</span></label>
+                    <input type="range" id="price-range" min="0" max="500" value="200" step="10">
+                </div>
+
+                <div class="filter-group">
+                    <label for="sort-select">Sort By:</label>
+                    <select id="sort-select">
+                        <option value="featured">Featured</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="name">Name A-Z</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-secondary" id="size-guide-btn">
+                    <i class="fas fa-ruler"></i> Size Guide
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Grid -->
+    <section class="products">
+        <div class="container">
+            <div id="products-grid" class="products-grid">
+                <!-- Products will be dynamically loaded -->
+            </div>
+            <div id="no-results" class="no-results" style="display: none;">
+                <i class="fas fa-search"></i>
+                <p>No dresses found matching your criteria</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <h2 class="section-title">What Our Customers Say</h2>
+            <div class="testimonials-carousel">
+                <button class="carousel-btn prev" id="prev-testimonial" aria-label="Previous testimonial">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="testimonials-wrapper">
+                    <div class="testimonial active">
+                        <div class="testimonial-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="testimonial-text">"Absolutely love the quality and fit! The dress exceeded my expectations. Fast shipping and beautiful packaging too!"</p>
+                        <p class="testimonial-author">- Sarah Johnson</p>
+                    </div>
+                    <div class="testimonial">
+                        <div class="testimonial-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="testimonial-text">"Perfect for my special occasion! The fabric is luxurious and the design is stunning. I received so many compliments!"</p>
+                        <p class="testimonial-author">- Emily Chen</p>
+                    </div>
+                    <div class="testimonial">
+                        <div class="testimonial-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="testimonial-text">"Great customer service and amazing collection. The size guide was very accurate. Will definitely shop here again!"</p>
+                        <p class="testimonial-author">- Maria Rodriguez</p>
+                    </div>
+                </div>
+                <button class="carousel-btn next" id="next-testimonial" aria-label="Next testimonial">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="newsletter">
+        <div class="container">
+            <h2 class="section-title">Stay Updated</h2>
+            <p>Subscribe to get special offers, free giveaways, and exclusive deals</p>
+            <form id="newsletter-form" class="newsletter-form">
+                <input type="email" id="newsletter-email" placeholder="Enter your email" required aria-label="Email address">
+                <button type="submit" class="btn btn-primary">Subscribe</button>
+            </form>
+            <div id="newsletter-message" class="newsletter-message"></div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <h2 class="section-title">Get In Touch</h2>
+            <form id="contact-form" class="contact-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" name="subject" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Send Message</button>
+            </form>
+            <div id="contact-message" class="contact-message"></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About Us</h3>
+                    <p>Your premier destination for elegant dresses. Quality, style, and elegance in every piece.</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Pinterest"><i class="fab fa-pinterest"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#shop">Shop</a></li>
+                        <li><a href="#new-arrivals">New Arrivals</a></li>
+                        <li><a href="#sale">Sale</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Customer Service</h3>
+                    <ul>
+                        <li><a href="#">Shipping Info</a></li>
+                        <li><a href="#">Returns</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <ul>
+                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> info@elegantdresses.com</li>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Fashion Ave, NY 10001</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Elegant Dresses. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Shopping Cart Modal -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Shopping Cart</h2>
+                <button class="modal-close" id="close-cart">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="cart-items"></div>
+                <div id="empty-cart" class="empty-state">
+                    <i class="fas fa-shopping-bag"></i>
+                    <p>Your cart is empty</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span id="cart-total">$0.00</span>
+                </div>
+                <button class="btn btn-primary btn-block" id="checkout-btn">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wishlist Modal -->
+    <div id="wishlist-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>My Wishlist</h2>
+                <button class="modal-close" id="close-wishlist">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="wishlist-items"></div>
+                <div id="empty-wishlist" class="empty-state">
+                    <i class="fas fa-heart"></i>
+                    <p>Your wishlist is empty</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Quick View Modal -->
+    <div id="quickview-modal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Quick View</h2>
+                <button class="modal-close" id="close-quickview">&times;</button>
+            </div>
+            <div class="modal-body" id="quickview-content">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Size Guide Modal -->
+    <div id="size-guide-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Size Guide</h2>
+                <button class="modal-close" id="close-size-guide">&times;</button>
+            </div>
+            <div class="modal-body">
+                <table class="size-table">
+                    <thead>
+                        <tr>
+                            <th>Size</th>
+                            <th>Bust (in)</th>
+                            <th>Waist (in)</th>
+                            <th>Hips (in)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>XS</td>
+                            <td>31-32</td>
+                            <td>24-25</td>
+                            <td>34-35</td>
+                        </tr>
+                        <tr>
+                            <td>S</td>
+                            <td>33-34</td>
+                            <td>26-27</td>
+                            <td>36-37</td>
+                        </tr>
+                        <tr>
+                            <td>M</td>
+                            <td>35-36</td>
+                            <td>28-29</td>
+                            <td>38-39</td>
+                        </tr>
+                        <tr>
+                            <td>L</td>
+                            <td>37-39</td>
+                            <td>30-32</td>
+                            <td>40-42</td>
+                        </tr>
+                        <tr>
+                            <td>XL</td>
+                            <td>40-42</td>
+                            <td>33-35</td>
+                            <td>43-45</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <button id="scroll-top" class="scroll-top" aria-label="Scroll to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
