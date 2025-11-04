@@ -1,698 +1,665 @@
-import { StateManager } from './modules/state-manager.js';
-import { Router } from './modules/router.js';
-import { ToastManager } from './modules/toast-manager.js';
-import { ModalManager } from './modules/modal-manager.js';
-import { PageLoader } from './modules/page-loader.js';
-import { FilterManager } from './modules/filter-manager.js';
-import { ApiService } from './modules/api.service.js';
-import { Utils } from './modules/utils.js';
-
-class CryptoDropsApp {
-  constructor() {
-    this.stateManager = new StateManager();
-    this.toastManager = null;
-    this.modalManager = null;
-    this.pageLoader = null;
-    this.filterManager = null;
-    this.router = null;
-    this.elements = {};
-    this.carouselAnimationId = null;
-    this.carouselPosition = 0;
-    this.carouselSpeed = 0.3;
-    this.manualScrollOffset = 0;
-    this.pauseCarousel = false;
-  }
-
-  async init() {
-    this.initializeElements();
-    this.initializeManagers();
-    this.initializeEventListeners();
-    this.initializeAnimations();
-    
-    await this.loadDataFromAPI();
-    
-    this.pageLoader.loadPageContent('home');
-    this.startFloatingAnimations();
-    this.startCarouselAnimation();
-    
-    // Check for shared airdrop after a slight delay to ensure DOM is ready
-    setTimeout(() => this.checkForSharedAirdrop(), 100);
-  }
-
-  checkForSharedAirdrop() {
-    const hash = window.location.hash;
-    console.log('[DEBUG] Checking for shared airdrop, hash:', hash);
-    if (hash && hash.startsWith('#airdrop-')) {
-      const airdropId = parseInt(hash.replace('#airdrop-', ''));
-      console.log('[DEBUG] Found shared airdrop ID:', airdropId);
-      if (!isNaN(airdropId)) {
-        // Open the airdrop modal
-        this.showAirdropDetail(airdropId);
-        // Clean up the URL
-        window.history.replaceState(null, '', window.location.pathname);
-      }
+const products = [
+    {
+        name: 'Midnight Sonata',
+        tag: 'Gala',
+        meta: 'Hand-beaded silk tulle',
+        price: 3200,
+        image: 'https://images.unsplash.com/photo-1516826957135-700dedea698c?auto=format&fit=crop&w=800&q=80',
+        style: 'gala'
+    },
+    {
+        name: 'Blushing Reverie',
+        tag: 'Bridal',
+        meta: 'Off-shoulder floral lace',
+        price: 4500,
+        image: 'https://images.unsplash.com/photo-1542060748-10c28b62716c?auto=format&fit=crop&w=800&q=80',
+        style: 'bridal'
+    },
+    {
+        name: 'Celestial Bloom',
+        tag: 'Evening',
+        meta: 'Sequined organza layers',
+        price: 2800,
+        image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80',
+        style: 'evening'
+    },
+    {
+        name: 'Velvet Dawn',
+        tag: 'Day-to-night',
+        meta: 'Convertible midi silhouette',
+        price: 1850,
+        image: 'https://images.unsplash.com/photo-1553154554-1e03382aabb6?auto=format&fit=crop&w=800&q=80',
+        style: 'day'
+    },
+    {
+        name: 'Aurora Ripple',
+        tag: 'Evening',
+        meta: 'Bias-cut satin charmeuse',
+        price: 2450,
+        image: 'https://images.unsplash.com/photo-1515378960530-7c0da6231fb1?auto=format&fit=crop&w=800&q=80',
+        style: 'evening'
+    },
+    {
+        name: 'Whispering Meadow',
+        tag: 'Bridal',
+        meta: 'Illusion neckline & petals',
+        price: 5200,
+        image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80',
+        style: 'bridal'
     }
-  }
+];
 
-  initializeElements() {
-    this.elements = {
-      navLinks: document.querySelectorAll('.nav-link'),
-      mobileMenuToggle: document.getElementById('mobileMenuToggle'),
-      pages: document.querySelectorAll('.page'),
-      heroSearch: document.getElementById('heroSearch'),
-      airdropSearch: document.getElementById('airdropSearch'),
-      searchSuggestions: document.getElementById('searchSuggestions'),
-      categoryFilter: document.getElementById('categoryFilter'),
-      statusFilter: document.getElementById('statusFilter'),
-      sortFilter: document.getElementById('sortFilter'),
-      filterToggleBtn: document.getElementById('filterToggleBtn'),
-      activeFilters: document.getElementById('activeFilters'),
-      airdropsGrid: document.getElementById('airdropsGrid'),
-      featuredCarousel: document.getElementById('featuredCarousel'),
-      carouselPrev: document.getElementById('carouselPrev'),
-      carouselNext: document.getElementById('carouselNext'),
-      viewBtns: document.querySelectorAll('.view-btn'),
-      pagination: document.getElementById('pagination'),
-      prevPage: document.getElementById('prevPage'),
-      nextPage: document.getElementById('nextPage'),
-      pageNumbers: document.getElementById('pageNumbers'),
-      newsletterForm: document.getElementById('newsletterForm'),
-      newsletterSuccess: document.getElementById('newsletterSuccess'),
-      dashboardTabs: document.querySelectorAll('.tab-btn'),
-      modal: document.getElementById('airdropModal'),
-      modalBody: document.getElementById('modalBody'),
-      modalClose: document.querySelector('.modal-close'),
-      modalOverlay: document.querySelector('.modal-overlay'),
-      toastContainer: document.getElementById('toastContainer'),
-      exploreAllAirdropsBtn: document.getElementById('exploreAllAirdropsBtn'),
-      learnAboutAirdropsBtn: document.getElementById('learnAboutAirdropsBtn')
-    };
-  }
+const collections = [
+    {
+        name: 'Moonlit Gala',
+        tag: 'Gala',
+        image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80',
+        description: 'Architectural silhouettes with hand-cut crystals and velvet detailing.'
+    },
+    {
+        name: 'Ethereal Bridal',
+        tag: 'Bridal',
+        image: 'https://images.unsplash.com/photo-1527416876370-fb74d128c82d?auto=format&fit=crop&w=800&q=80',
+        description: 'Soft botanicals, sculpted corsetry, and heirloom-worthy veils.'
+    },
+    {
+        name: 'Nocturne Evenings',
+        tag: 'Evening',
+        image: 'https://images.unsplash.com/photo-1511288590361-652a7c1f14f6?auto=format&fit=crop&w=800&q=80',
+        description: 'Sculpted silk, liquid sequins, and luminous fabrics for after dark.'
+    },
+    {
+        name: 'Daydream Stories',
+        tag: 'Day-to-night',
+        image: 'https://images.unsplash.com/photo-1523419409543-0c1df022bdd1?auto=format&fit=crop&w=800&q=80',
+        description: 'Playful florals, airy layers, and effortless tailoring for every hour.'
+    }
+];
 
-  initializeManagers() {
-    this.toastManager = new ToastManager(this.elements.toastContainer);
-    this.modalManager = new ModalManager(
-      this.elements.modal,
-      this.elements.modalBody,
-      this.stateManager,
-      this.toastManager
-    );
-    this.pageLoader = new PageLoader(this.stateManager);
-    this.filterManager = new FilterManager(this.stateManager, this.pageLoader);
-    this.router = new Router(this.stateManager, this.pageLoader);
-  }
+const paletteOptions = [
+    { name: 'Rose Quartz', color: '#f8c4d8' },
+    { name: 'Champagne', color: '#fbe3c4' },
+    { name: 'Aurora Lilac', color: '#cbb8ff' },
+    { name: 'Midnight', color: '#21192f' }
+];
 
-  initializeEventListeners() {
-    this.elements.navLinks.forEach(link => {
-      link.addEventListener('click', (e) => this.router.handleNavigation(e));
+const lookbookImages = [
+    'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=700&q=80',
+    'https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=700&q=80',
+    'https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=700&q=80',
+    'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=700&q=80',
+    'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=700&q=80',
+    'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=700&q=80'
+];
+
+const events = [
+    {
+        title: 'Parisian Trunk Show',
+        date: 'April 12 · Paris',
+        description: 'Preview 14 unreleased gowns with our creative director.',
+        spots: '12 spots left'
+    },
+    {
+        title: 'Silk Painting Workshop',
+        date: 'April 19 · New York',
+        description: 'Learn brush techniques with our textile artists.',
+        spots: '8 spots left'
+    },
+    {
+        title: 'Celestial Couture Preview',
+        date: 'May 4 · Milan',
+        description: 'Exclusive runway preview for loyalty members.',
+        spots: 'Waitlist open'
+    }
+];
+
+const journalStories = [
+    {
+        title: 'Behind the seams of Midnight Sonata',
+        tag: 'Atelier',
+        excerpt: 'Hand-beaded constellations stitched with Swarovski crystals and starlight embroidery.',
+        image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        title: 'How to style heirloom lace',
+        tag: 'Styling',
+        excerpt: 'Layer modern silhouettes over vintage lace for unexpected texture play.',
+        image: 'https://images.unsplash.com/photo-1475180098004-ca77a66827be?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        title: 'Our path to regenerative silk',
+        tag: 'Sustainability',
+        excerpt: 'Partnering with mulberry farms that plant biodiversity corridors across Europe.',
+        image: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=800&q=80'
+    }
+];
+
+const testimonials = [
+    {
+        quote: 'Aurora reimagined my grandmother’s gown into something profoundly modern yet sentimental.',
+        name: 'Isabella Hart',
+        event: 'Florence garden wedding'
+    },
+    {
+        quote: 'The virtual fitting was a dream — I landed my look in under 10 minutes.',
+        name: 'Maya Chen',
+        event: 'Singapore rooftop soirée'
+    },
+    {
+        quote: 'Every alteration felt like a celebration. I have never twirled with more joy.',
+        name: 'Noor Al-Masri',
+        event: 'Dubai evening reception'
+    }
+];
+
+const communityImages = [
+    {
+        image: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=600&q=80',
+        caption: 'Amelia &amp; the Celestial gown at Palais Garnier'
+    },
+    {
+        image: 'https://images.unsplash.com/photo-1543076447-215ad9ba6923?auto=format&fit=crop&w=600&q=80',
+        caption: 'Lara wearing Daydream Stories in Lisbon'
+    },
+    {
+        image: 'https://images.unsplash.com/photo-1498931299472-c7fbc5945028?auto=format&fit=crop&w=600&q=80',
+        caption: 'Zara’s custom velvet suit at the London Gala'
+    },
+    {
+        image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=600&q=80',
+        caption: 'Eden’s playful reception look in Santorini'
+    }
+];
+
+const stylistResponses = {
+    'black-tie_romantic_lace': 'The Aurora Ripple with lace appliqués, paired with rose gold drop earrings.',
+    'black-tie_dramatic_beading': 'Choose Midnight Sonata with dramatic cape sleeves and a crystal cuff.',
+    'garden_romantic_movement': 'Slip into Whispering Meadow with soft tulle layers and floral crown.',
+    'city_minimal_asymmetry': 'Velvet Dawn with sculpted asymmetrical neckline and sleek gloves.',
+    'destination_playful_movement': 'Celestial Bloom with detachable train for beach-to-dance-floor magic.'
+};
+
+const formatCurrency = (value) => `$${value.toLocaleString()}`;
+
+const hydrateTemplate = (template, data) => {
+    const fragment = template.content.cloneNode(true);
+    fragment.querySelectorAll('[data-name]').forEach((node) => {
+        node.textContent = data.name;
     });
-
-    if (this.elements.mobileMenuToggle) {
-      this.elements.mobileMenuToggle.addEventListener('click', Router.toggleMobileMenu);
-    }
-
-    this.initializeListToggle();
-
-    document.querySelectorAll('.dropdown-item').forEach(item => {
-      item.addEventListener('click', (e) => this.router.handleNavigation(e));
+    fragment.querySelectorAll('[data-price]').forEach((node) => {
+        node.textContent = formatCurrency(data.price);
     });
-
-    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
-      toggle.addEventListener('click', this.handleDropdownToggle);
+    fragment.querySelectorAll('[data-meta]').forEach((node) => {
+        node.textContent = data.meta;
     });
-
-    // Initialize accordion event listeners
-    this.initializeAccordions();
-
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.nav-dropdown')) {
-        document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('active'));
-      }
-      if (this.elements.searchSuggestions && !e.target.closest('.search-container')) {
-        this.elements.searchSuggestions.style.display = 'none';
-      }
+    fragment.querySelectorAll('[data-image]').forEach((node) => {
+        node.src = data.image;
     });
-
-    if (this.elements.heroSearch) {
-      this.elements.heroSearch.addEventListener('input', Utils.debounce((e) => this.filterManager.handleSearch(e), 300));
-    }
-    if (this.elements.airdropSearch) {
-      this.elements.airdropSearch.addEventListener('input', Utils.debounce((e) => this.filterManager.handleSearch(e), 300));
-    }
-
-    if (this.elements.categoryFilter) {
-      this.elements.categoryFilter.addEventListener('change', (e) => this.filterManager.handleFilterChange(e));
-    }
-    if (this.elements.statusFilter) {
-      this.elements.statusFilter.addEventListener('change', (e) => this.filterManager.handleFilterChange(e));
-    }
-    if (this.elements.sortFilter) {
-      this.elements.sortFilter.addEventListener('change', (e) => this.filterManager.handleFilterChange(e));
-    }
-
-    if (this.elements.filterToggleBtn) {
-      this.elements.filterToggleBtn.addEventListener('click', () => FilterManager.toggleFilters());
-    }
-
-    this.elements.viewBtns.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const view = e.currentTarget.getAttribute('data-view');
-        this.filterManager.handleViewToggle(view);
-      });
+    fragment.querySelectorAll('[data-tag]').forEach((node) => {
+        node.textContent = data.tag;
     });
-
-
-    if (this.elements.prevPage) {
-      this.elements.prevPage.addEventListener('click', () => this.changePage(this.stateManager.getCurrentPageNumber() - 1));
-    }
-    if (this.elements.nextPage) {
-      this.elements.nextPage.addEventListener('click', () => this.changePage(this.stateManager.getCurrentPageNumber() + 1));
-    }
-
-    if (this.elements.newsletterForm) {
-      this.elements.newsletterForm.addEventListener('submit', (e) => this.handleNewsletterSubmit(e));
-    }
-
-    this.elements.dashboardTabs.forEach(tab => {
-      tab.addEventListener('click', (e) => {
-        const tabName = e.target.getAttribute('data-tab');
-        this.pageLoader.handleTabChange(tabName);
-      });
+    fragment.querySelectorAll('[data-date]').forEach((node) => {
+        node.textContent = data.date;
     });
-
-    if (this.elements.modalClose) {
-      this.elements.modalClose.addEventListener('click', () => this.modalManager.close());
-    }
-    if (this.elements.modalOverlay) {
-      this.elements.modalOverlay.addEventListener('click', () => this.modalManager.close());
-    }
-
-    // Event delegation for share button clicks
-    document.addEventListener('click', (e) => {
-      const shareBtn = e.target.closest('.share-btn');
-      if (shareBtn) {
-        e.stopPropagation();
-        const airdropId = parseInt(shareBtn.dataset.airdropId);
-        this.shareAirdrop(airdropId);
-      }
+    fragment.querySelectorAll('[data-title]').forEach((node) => {
+        node.textContent = data.title;
     });
-
-    // Event delegation for airdrop card clicks
-    document.addEventListener('click', (e) => {
-      const airdropCard = e.target.closest('[data-airdrop-id]');
-      if (airdropCard && !e.target.closest('.share-btn')) {
-        const airdropId = parseInt(airdropCard.dataset.airdropId);
-        console.log('[CLICK] Airdrop card clicked, ID:', airdropId);
-        this.showAirdropDetail(airdropId);
-      }
+    fragment.querySelectorAll('[data-description]').forEach((node) => {
+        node.textContent = data.description;
     });
-
-    // Event delegation for main pagination buttons
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('page-number') && e.target.dataset.page && !e.target.dataset.listType) {
-        e.preventDefault();
-        const page = parseInt(e.target.dataset.page);
-        this.changePage(page);
-      }
+    fragment.querySelectorAll('[data-spots]').forEach((node) => {
+        node.textContent = data.spots;
     });
-
-    // Event delegation for list pagination buttons
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('page-number') && e.target.dataset.listType && e.target.dataset.page) {
-        e.preventDefault();
-        const type = e.target.dataset.listType;
-        const page = parseInt(e.target.dataset.page);
-        this.changeListPage(type, page);
-      }
+    fragment.querySelectorAll('[data-quote]').forEach((node) => {
+        node.textContent = data.quote;
     });
-
-    // Hero CTA buttons
-    if (this.elements.exploreAllAirdropsBtn) {
-      this.elements.exploreAllAirdropsBtn.addEventListener('click', () => {
-        this.router.navigateToPage('airdrops');
-      });
-    }
-    if (this.elements.learnAboutAirdropsBtn) {
-      this.elements.learnAboutAirdropsBtn.addEventListener('click', () => {
-        this.router.navigateToPage('learn-what');
-      });
-    }
-
-    // Carousel hover pause functionality
-    const carouselContainer = document.querySelector('.carousel-container');
-    if (carouselContainer) {
-      carouselContainer.addEventListener('mouseenter', () => {
-        this.pauseCarousel = true;
-      });
-      carouselContainer.addEventListener('mouseleave', () => {
-        this.pauseCarousel = false;
-      });
-    }
-  }
-
-  scrollCarousel(direction) {
-    const carousel = document.getElementById('featuredCarousel');
-    if (!carousel) return;
-
-    const firstCard = carousel.querySelector('.airdrop-card');
-    if (!firstCard) return;
-    
-    const cardWidth = firstCard.offsetWidth;
-    const gap = 20;
-    const scrollAmount = (cardWidth + gap) * 3;
-    const cards = carousel.querySelectorAll('.airdrop-card');
-    const totalCardWidth = cardWidth + gap;
-    
-    // For tripled cards, limit scroll to one-third of total width
-    const oneThirdLength = cards.length / 3;
-    const maxOffset = totalCardWidth * oneThirdLength * 0.8;
-    
-    if (direction === 'left') {
-      this.manualScrollOffset += scrollAmount;
-      if (this.manualScrollOffset > maxOffset) {
-        this.manualScrollOffset = maxOffset;
-      }
-    } else {
-      this.manualScrollOffset -= scrollAmount;
-      if (this.manualScrollOffset < -maxOffset) {
-        this.manualScrollOffset = -maxOffset;
-      }
-    }
-  }
-
-  startCarouselAnimation() {
-    const animate = () => {
-      const carousel = document.getElementById('featuredCarousel');
-      if (!carousel) {
-        this.carouselAnimationId = requestAnimationFrame(animate);
-        return;
-      }
-
-      const cards = carousel.querySelectorAll('.airdrop-card');
-      if (cards.length === 0) {
-        this.carouselAnimationId = requestAnimationFrame(animate);
-        return;
-      }
-
-      // Only update position if not paused
-      if (!this.pauseCarousel) {
-        this.carouselPosition -= this.carouselSpeed;
-        
-        const firstCard = cards[0];
-        const cardWidth = firstCard.offsetWidth;
-        const gap = 20;
-        const totalCardWidth = cardWidth + gap;
-        
-        // For tripled cards, reset at one-third of total width for seamless loop
-        const oneThirdLength = cards.length / 3;
-        const resetWidth = totalCardWidth * oneThirdLength;
-        
-        // Seamlessly loop when we've scrolled past one set
-        if (Math.abs(this.carouselPosition) >= resetWidth) {
-          this.carouselPosition = this.carouselPosition % resetWidth;
-        }
-        
-        const finalPosition = this.carouselPosition + this.manualScrollOffset;
-        carousel.style.transform = `translateX(${finalPosition}px)`;
-      }
-      
-      this.carouselAnimationId = requestAnimationFrame(animate);
-    };
-    
-    this.carouselAnimationId = requestAnimationFrame(animate);
-  }
-
-  stopCarouselAnimation() {
-    if (this.carouselAnimationId) {
-      cancelAnimationFrame(this.carouselAnimationId);
-      this.carouselAnimationId = null;
-    }
-  }
-
-  handleDropdownToggle(e) {
-    e.stopPropagation();
-    const dropdown = e.target.closest('.nav-dropdown');
-    const isOpen = dropdown.classList.contains('active');
-    
-    document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('active'));
-    
-    if (!isOpen) {
-      dropdown.classList.add('active');
-    }
-  }
-
-  initializeAccordions() {
-    // Add event listeners to all accordion headers
-    document.querySelectorAll('.accordion-header').forEach(header => {
-      header.addEventListener('click', () => {
-        this.toggleAccordion(header);
-      });
+    fragment.querySelectorAll('[data-event]').forEach((node) => {
+        node.textContent = data.event;
     });
-    console.log('Accordion event listeners initialized');
-  }
+    fragment.querySelectorAll('[data-tag]').forEach((node) => {
+        node.textContent = data.tag;
+    });
+    fragment.querySelectorAll('[data-excerpt]').forEach((node) => {
+        node.textContent = data.excerpt;
+    });
+    return fragment;
+};
 
-  toggleAccordion(header) {
-    console.log('toggleAccordion called', header);
-    
-    const accordionItem = header.parentElement;
-    const content = accordionItem.querySelector('.accordion-content');
-    const arrow = header.querySelector('.accordion-arrow');
-    
-    console.log('Elements found:', { accordionItem, content, arrow });
-    
-    if (!content || !arrow) {
-      console.error('Accordion elements not found', { content, arrow });
-      return;
+const scrollToTarget = (target) => {
+    const section = document.querySelector(target);
+    if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-    
-    const isOpen = accordionItem.classList.contains('active');
-    console.log('Is open:', isOpen);
-    
-    if (isOpen) {
-      content.style.maxHeight = '0px';
-      accordionItem.classList.remove('active');
-      arrow.style.transform = 'rotate(0deg)';
-      console.log('Closed accordion');
-    } else {
-      accordionItem.classList.add('active');
-      // Force reflow to ensure padding changes are applied before measuring
-      void content.offsetHeight;
-      const height = content.scrollHeight;
-      content.style.maxHeight = height + 'px';
-      arrow.style.transform = 'rotate(180deg)';
-      console.log('Opened accordion, height:', height);
-    }
-  }
+};
 
-  initializeAnimations() {
-    const animatedElements = document.querySelectorAll('.hero-content, .section-header, .airdrop-card');
+const populateCollections = () => {
+    const container = document.querySelector('#collectionGrid');
+    if (!container) return;
+    container.innerHTML = '';
+    collections.forEach((collection) => {
+        const card = document.createElement('article');
+        card.className = 'collection-card';
+        card.dataset.collection = collection.tag.toLowerCase();
+        card.innerHTML = `
+            <div class="tag">${collection.tag}</div>
+            <img src="${collection.image}" alt="${collection.name}" loading="lazy" />
+            <h3>${collection.name}</h3>
+            <p>${collection.description}</p>
+            <button class="btn ghost" data-scroll-target="#book-fitting">Book fitting</button>
+        `;
+        container.append(card);
+    });
+};
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('fade-in');
-          }
+const populateProducts = (items) => {
+    const grid = document.querySelector('#productGrid');
+    const template = document.querySelector('#productTemplate');
+    if (!grid || !template) return;
+    grid.innerHTML = '';
+    items.forEach((item) => {
+        const fragment = hydrateTemplate(template, item);
+        fragment.querySelector('[data-image]').alt = `${item.name} dress`;
+        fragment.firstElementChild.dataset.style = item.style;
+        grid.append(fragment);
+    });
+};
+
+const populateFilters = () => {
+    const styleFilter = document.querySelector('#styleFilter');
+    if (!styleFilter) return;
+    const styles = [...new Set(products.map((product) => product.style))];
+    styles.forEach((style) => {
+        const option = document.createElement('option');
+        option.value = style;
+        option.textContent = style.replace('-', ' ');
+        styleFilter.append(option);
+    });
+};
+
+const populateLookbook = () => {
+    const grid = document.querySelector('#lookbookGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    lookbookImages.forEach((image, index) => {
+        const card = document.createElement('article');
+        card.className = 'lookbook-card';
+        card.innerHTML = `
+            <img src="${image}" alt="Lookbook dress ${index + 1}" loading="lazy" />
+            <span>Scene ${index + 1}</span>
+        `;
+        grid.append(card);
+    });
+};
+
+const populateEvents = () => {
+    const grid = document.querySelector('#eventsGrid');
+    const template = document.querySelector('#eventTemplate');
+    if (!grid || !template) return;
+    grid.innerHTML = '';
+    events.forEach((event) => {
+        const fragment = hydrateTemplate(template, event);
+        grid.append(fragment);
+    });
+};
+
+const populateJournal = () => {
+    const grid = document.querySelector('#journalGrid');
+    const template = document.querySelector('#journalTemplate');
+    if (!grid || !template) return;
+    grid.innerHTML = '';
+    journalStories.forEach((story) => {
+        const fragment = hydrateTemplate(template, story);
+        fragment.querySelector('[data-image]').alt = `${story.tag} journal story`;
+        grid.append(fragment);
+    });
+};
+
+const populateTestimonials = () => {
+    const container = document.querySelector('#testimonialSlider');
+    const template = document.querySelector('#testimonialTemplate');
+    if (!container || !template) return;
+    container.innerHTML = '';
+    testimonials.forEach((testimonial) => {
+        const fragment = hydrateTemplate(template, testimonial);
+        container.append(fragment);
+    });
+    container.dataset.index = 0;
+    updateTestimonialVisibility();
+};
+
+const updateTestimonialVisibility = () => {
+    const slider = document.querySelector('#testimonialSlider');
+    if (!slider) return;
+    const cards = slider.querySelectorAll('.testimonial-card');
+    const index = Number(slider.dataset.index || 0);
+    cards.forEach((card, idx) => {
+        card.style.display = idx === index ? 'grid' : 'none';
+    });
+};
+
+const populateCommunity = () => {
+    const feed = document.querySelector('#socialFeed');
+    if (!feed) return;
+    feed.innerHTML = '';
+    communityImages.forEach((tile) => {
+        const article = document.createElement('article');
+        article.className = 'social-tile';
+        article.innerHTML = `
+            <img src="${tile.image}" alt="${tile.caption}" loading="lazy" />
+            <div class="social-overlay"><span>${tile.caption}</span></div>
+        `;
+        feed.append(article);
+    });
+};
+
+const setupPaletteSwatches = () => {
+    const container = document.querySelector('#colorSwatches');
+    if (!container) return;
+    container.innerHTML = '';
+    paletteOptions.forEach((option, index) => {
+        const swatch = document.createElement('button');
+        swatch.type = 'button';
+        swatch.className = `swatch${index === 0 ? ' active' : ''}`;
+        swatch.style.background = option.color;
+        swatch.dataset.label = option.name;
+        container.append(swatch);
+    });
+};
+
+const setupCollectionFilters = () => {
+    const chips = document.querySelectorAll('[data-collection-filter]');
+    const cards = document.querySelectorAll('.collection-card');
+    chips.forEach((chip) => {
+        chip.addEventListener('click', () => {
+            chips.forEach((c) => c.classList.remove('active'));
+            chip.classList.add('active');
+            const collection = chip.dataset.collectionFilter;
+            cards.forEach((card) => {
+                card.style.display = collection === 'all' || card.dataset.collection === collection ? 'grid' : 'none';
+            });
         });
-      },
-      { threshold: 0.1 }
-    );
-
-    animatedElements.forEach(el => observer.observe(el));
-  }
-
-  startFloatingAnimations() {
-    const coins = document.querySelectorAll('.coin');
-
-    coins.forEach((coin, index) => {
-      setInterval(() => {
-        const randomX = Math.random() * 20 - 10;
-        const randomY = Math.random() * 20 - 10;
-        coin.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${Math.random() * 360}deg)`;
-      }, 3000 + index * 500);
     });
-  }
+};
 
-  async loadDataFromAPI() {
-    try {
-      const data = await ApiService.loadData();
-      
-      if (data && Array.isArray(data.airdrops)) {
-        this.stateManager.setAirdrops(data.airdrops);
-      } else {
-        console.warn('Invalid airdrops data received:', data);
-        this.stateManager.setAirdrops([]);
-      }
-      
-      if (data && data.stats) {
-        this.stateManager.setStats(data.stats);
-      }
-    } catch (error) {
-      console.error('Error loading data from API:', error);
-      this.stateManager.setAirdrops([]);
-      this.toastManager.error('Failed to load airdrops data');
+const filterProducts = () => {
+    const styleFilter = document.querySelector('#styleFilter');
+    if (!styleFilter) return products;
+    const value = styleFilter.value;
+    if (value === 'all') return [...products];
+    return products.filter((product) => product.style === value);
+};
+
+const sortProducts = (items) => {
+    const sortFilter = document.querySelector('#sortFilter');
+    if (!sortFilter) return items;
+    const value = sortFilter.value;
+    const cloned = [...items];
+    if (value === 'low-high') {
+        cloned.sort((a, b) => a.price - b.price);
     }
-  }
-
-
-  changePage(page) {
-    const filteredAirdrops = this.stateManager.getFilteredAirdrops();
-    const totalPages = Math.ceil(filteredAirdrops.length / this.stateManager.getItemsPerPage());
-
-    if (page < 1 || page > totalPages) return;
-
-    this.stateManager.setCurrentPageNumber(page);
-    this.pageLoader.renderAirdropGrid(filteredAirdrops);
-    this.pageLoader.renderMainPagination(filteredAirdrops.length);
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  async handleNewsletterSubmit(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(e.target);
-    const email = formData.get('email');
-    
-    if (!email) {
-      this.toastManager.error('Please enter your email address');
-      return;
+    if (value === 'high-low') {
+        cloned.sort((a, b) => b.price - a.price);
     }
-    
-    try {
-      const result = await ApiService.subscribeNewsletter(email);
-      
-      if (this.elements.newsletterSuccess) {
-        this.elements.newsletterSuccess.classList.remove('hidden');
-      }
-      
-      this.toastManager.success(result.message || 'Successfully subscribed to newsletter!');
-      
-      if (this.elements.newsletterForm) {
-        this.elements.newsletterForm.reset();
-      }
+    return cloned;
+};
 
-      setTimeout(() => {
-        if (this.elements.newsletterSuccess) {
-          this.elements.newsletterSuccess.classList.add('hidden');
-        }
-      }, 5000);
-    } catch (error) {
-      this.toastManager.error(error.message || 'Failed to subscribe. Please try again.');
-    }
-  }
+const updateProductListing = () => {
+    const filtered = filterProducts();
+    const sorted = sortProducts(filtered);
+    populateProducts(sorted);
+};
 
-  showAirdropDetail(airdropId) {
-    console.log('[DEBUG] showAirdropDetail called with:', airdropId);
-    const airdrop = this.stateManager.getAirdropById(airdropId);
-    console.log('[DEBUG] Airdrop retrieved:', airdrop);
-    if (airdrop) {
-      console.log('[DEBUG] Calling modal.show()');
-      this.modalManager.show(airdrop);
-    } else {
-      console.error('[DEBUG] No airdrop found!');
-    }
-  }
+const setupProductFilters = () => {
+    document.querySelector('#styleFilter')?.addEventListener('change', updateProductListing);
+    document.querySelector('#sortFilter')?.addEventListener('change', updateProductListing);
+};
 
-  toggleBookmark(airdropId) {
-    this.modalManager.handleBookmarkToggle(airdropId);
-  }
+const wishlistState = new Set();
 
-  toggleParticipation(airdropId) {
-    this.modalManager.handleParticipationToggle(airdropId);
-  }
+const updateWishlistLabel = () => {
+    const toggle = document.querySelector('#wishlistToggle');
+    if (toggle) toggle.textContent = `Wishlist (${wishlistState.size})`;
+};
 
-  shareAirdrop(airdropId) {
-    this.modalManager.handleShare(airdropId);
-  }
-
-  removeFilter(filterType) {
-    this.filterManager.removeFilter(filterType);
-  }
-
-  clearAllFilters() {
-    this.filterManager.clearAllFilters();
-  }
-
-  selectSuggestion(airdropId) {
-    this.filterManager.selectSuggestion(airdropId);
-  }
-
-  changeListPage(type, page) {
-    this.pageLoader.changeListPage(type, page);
-  }
-
-  initializeListToggle() {
-    document.addEventListener('click', (e) => {
-      const toggleTitle = e.target.closest('.list-title-toggle');
-      if (toggleTitle && window.innerWidth <= 768) {
-        const section = toggleTitle.closest('.airdrop-list-section');
-        const otherSections = document.querySelectorAll('.airdrop-list-section');
-        
-        otherSections.forEach(s => {
-          if (s !== section) {
-            s.classList.add('collapsed');
-          }
-        });
-        
-        section.classList.toggle('collapsed');
-      }
+const renderWishlist = () => {
+    const panel = document.querySelector('#wishlistPanel');
+    const container = document.querySelector('#wishlistItems');
+    if (!panel || !container) return;
+    panel.classList.toggle('hidden', wishlistState.size === 0);
+    container.innerHTML = '';
+    wishlistState.forEach((item) => {
+        const row = document.createElement('div');
+        row.className = 'wishlist-item';
+        row.innerHTML = `<span>${item.name}</span><span>${formatCurrency(item.price)}</span>`;
+        container.append(row);
     });
+};
 
-    this.setInitialMobileState();
-    
-    window.addEventListener('resize', () => {
-      this.setInitialMobileState();
-    });
-  }
-
-  setInitialMobileState() {
-    if (window.innerWidth <= 768) {
-      const sections = document.querySelectorAll('.airdrop-list-section');
-      sections.forEach((section, index) => {
-        if (index === 0) {
-          section.classList.remove('collapsed');
+const handleProductActions = (event) => {
+    const button = event.target.closest('button[data-action]');
+    if (!button) return;
+    const card = button.closest('.product-card');
+    const name = card?.querySelector('[data-name]')?.textContent;
+    const product = products.find((item) => item.name === name);
+    if (!product) return;
+    const action = button.dataset.action;
+    if (action === 'wishlist') {
+        if (wishlistState.has(product)) {
+            wishlistState.delete(product);
         } else {
-          section.classList.add('collapsed');
+            wishlistState.add(product);
         }
-      });
+        updateWishlistLabel();
+        renderWishlist();
+    }
+    if (action === 'bag') {
+        openModal(`
+            <h2>${product.name}</h2>
+            <p>${product.meta}</p>
+            <p class="product-price">${formatCurrency(product.price)}</p>
+            <p>Our stylists will contact you within 24 hours to finalize sizing and delivery details.</p>
+        `);
+    }
+    if (action === 'details') {
+        openModal(`
+            <h2>${product.name}</h2>
+            <p>${product.meta}</p>
+            <ul>
+                <li>Available sizes: 0 – 20</li>
+                <li>Complimentary alterations for 1 year</li>
+                <li>Fabric swatches on request</li>
+            </ul>
+        `);
+    }
+};
+
+const clearWishlist = () => {
+    wishlistState.clear();
+    updateWishlistLabel();
+    renderWishlist();
+};
+
+const handleWishlistToggle = () => {
+    const panel = document.querySelector('#wishlistPanel');
+    panel?.classList.toggle('hidden');
+};
+
+const handleStylistSubmit = (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const data = new FormData(form);
+    const key = `${data.get('occasion')}_${data.get('mood')}_${data.get('detail')}`;
+    const result = stylistResponses[key] || 'The atelier will curate three bespoke looks within 24 hours.';
+    const output = document.querySelector('#stylistResult');
+    if (output) {
+        output.textContent = result;
+        output.classList.remove('hidden');
+    }
+};
+
+const handleDesignUpdate = () => {
+    const silhouette = document.querySelector('#silhouetteSelect').value;
+    const fabric = document.querySelector('#fabricSelect').value;
+    const sparkles = document.querySelector('#sparkleToggle').checked;
+    const train = document.querySelector('#trainToggle').checked;
+    const swatch = document.querySelector('.swatch.active');
+    const preview = document.querySelector('#designPreview');
+    const label = document.querySelector('#designLabel');
+    if (!preview || !label) return;
+    preview.style.background = `linear-gradient(160deg, ${swatch?.style.background || '#f8c4d8'}, rgba(255, 214, 196, 0.4))`;
+    label.textContent = `${silhouette.replace('-', ' ')} · ${fabric.replace('-', ' ')}`;
+    if (sparkles) {
+        preview.classList.add('sparkle');
     } else {
-      document.querySelectorAll('.airdrop-list-section').forEach(section => {
-        section.classList.remove('collapsed');
-      });
+        preview.classList.remove('sparkle');
     }
-  }
-}
-
-const app = new CryptoDropsApp();
-
-// Expose functions to window BEFORE DOMContentLoaded to ensure they're available immediately
-window.navigateToPage = (pageId) => {
-  try {
-    if (app.router) {
-      app.router.navigateToPage(pageId);
-    } else {
-      console.error('Router not initialized yet');
-    }
-  } catch (error) {
-    console.error('Error in navigateToPage:', error);
-  }
+    const trainAccent = document.querySelector('#trainAccent');
+    trainAccent?.classList.toggle('visible', train);
 };
 
-window.showAirdropDetail = (id) => {
-  try {
-    console.log('[CLICK] showAirdropDetail called with ID:', id);
-    if (!app) {
-      console.error('App not initialized');
-      return;
-    }
-    if (!app.stateManager) {
-      console.error('StateManager not initialized');
-      return;
-    }
-    if (!app.modalManager) {
-      console.error('ModalManager not initialized');
-      return;
-    }
-    app.showAirdropDetail(id);
-  } catch (error) {
-    console.error('Error in showAirdropDetail:', error);
-  }
+const handleSwatchClick = (event) => {
+    const target = event.target.closest('.swatch');
+    if (!target) return;
+    document.querySelectorAll('.swatch').forEach((swatch) => swatch.classList.remove('active'));
+    target.classList.add('active');
+    handleDesignUpdate();
 };
 
-window.toggleBookmark = (id) => {
-  try {
-    if (app.modalManager) {
-      app.toggleBookmark(id);
+const savedDesigns = [];
+
+const handleSaveDesign = () => {
+    const label = document.querySelector('#designLabel')?.textContent;
+    const swatch = document.querySelector('.swatch.active')?.dataset.label;
+    const sparkles = document.querySelector('#sparkleToggle').checked ? 'with stardust shimmer' : 'classic finish';
+    const train = document.querySelector('#trainToggle').checked ? 'cathedral train' : 'no train';
+    if (!label || !swatch) return;
+    savedDesigns.unshift(`${label} · ${swatch} · ${sparkles}, ${train}`);
+    const list = document.querySelector('#savedDesigns');
+    if (list) {
+        list.innerHTML = savedDesigns.map((item) => `<li>${item}</li>`).join('');
     }
-  } catch (error) {
-    console.error('Error in toggleBookmark:', error);
-  }
 };
 
-window.shareAirdrop = (id) => {
-  try {
-    if (app.modalManager) {
-      app.shareAirdrop(id);
+const handleLookbookShuffle = () => {
+    lookbookImages.sort(() => Math.random() - 0.5);
+    populateLookbook();
+};
+
+const handleJournalShuffle = () => {
+    journalStories.sort(() => Math.random() - 0.5);
+    populateJournal();
+};
+
+const handleTestimonialNav = (direction) => {
+    const slider = document.querySelector('#testimonialSlider');
+    if (!slider) return;
+    const cards = slider.querySelectorAll('.testimonial-card');
+    const current = Number(slider.dataset.index || 0);
+    const next = (current + direction + cards.length) % cards.length;
+    slider.dataset.index = next;
+    updateTestimonialVisibility();
+};
+
+const openModal = (content) => {
+    const template = document.querySelector('#modalTemplate');
+    if (!template) return;
+    const fragment = template.content.cloneNode(true);
+    fragment.querySelector('.modal-body').innerHTML = content;
+    const modal = fragment.querySelector('.modal');
+    document.body.append(modal);
+    modal.addEventListener('click', (event) => {
+        if (event.target.dataset.close !== undefined || event.target.classList.contains('modal-close')) {
+            modal.remove();
+        }
+    });
+};
+
+const handleBookingSubmit = (event) => {
+    event.preventDefault();
+    const feedback = document.querySelector('#bookingFeedback');
+    if (!feedback) return;
+    feedback.textContent = 'Merci! A stylist will confirm with a curated itinerary within 12 hours.';
+    event.target.reset();
+};
+
+const handleNewsletterSubmit = (event) => {
+    event.preventDefault();
+    const feedback = document.querySelector('#newsletterFeedback');
+    if (!feedback) return;
+    feedback.textContent = 'Welcome to Aurora Circle. Expect our next dispatch on Sunday moonrise.';
+    event.target.reset();
+};
+
+const handleFaqToggle = (event) => {
+    const question = event.target.closest('.faq-question');
+    if (!question) return;
+    const expanded = question.getAttribute('aria-expanded') === 'true';
+    question.setAttribute('aria-expanded', String(!expanded));
+};
+
+const handleScrollButtons = (event) => {
+    const target = event.target.closest('[data-scroll-target]');
+    if (!target) return;
+    const selector = target.getAttribute('data-scroll-target');
+    if (selector) {
+        event.preventDefault();
+        scrollToTarget(selector);
     }
-  } catch (error) {
-    console.error('Error in shareAirdrop:', error);
-  }
 };
 
-window.toggleParticipation = (id) => {
-  try {
-    if (app.modalManager) {
-      app.toggleParticipation(id);
-    }
-  } catch (error) {
-    console.error('Error in toggleParticipation:', error);
-  }
+const handleBackToTop = () => {
+    const button = document.querySelector('#backToTop');
+    if (!button) return;
+    button.classList.toggle('visible', window.scrollY > 300);
 };
 
-window.removeFilter = (type) => {
-  try {
-    console.log('[window.removeFilter] Called with type:', type);
-    if (app.filterManager) {
-      app.filterManager.removeFilter(type);
-    } else {
-      console.error('[window.removeFilter] app.filterManager is not available');
-    }
-  } catch (error) {
-    console.error('Error in removeFilter:', error);
-  }
+const handleThemeToggle = () => {
+    const body = document.body;
+    const toggle = document.querySelector('#themeToggle');
+    const dark = body.classList.toggle('theme-dark');
+    body.classList.toggle('theme-light', !dark);
+    if (toggle) toggle.textContent = dark ? '🌙' : '☀️';
 };
 
-window.clearAllFilters = () => {
-  try {
-    if (app.filterManager) {
-      app.filterManager.clearAllFilters();
-    }
-  } catch (error) {
-    console.error('Error in clearAllFilters:', error);
-  }
+const init = () => {
+    populateCollections();
+    populateFilters();
+    populateProducts(products);
+    populateLookbook();
+    populateEvents();
+    populateJournal();
+    populateTestimonials();
+    populateCommunity();
+    setupPaletteSwatches();
+    setupCollectionFilters();
+    setupProductFilters();
+    updateWishlistLabel();
+    renderWishlist();
+
+    document.addEventListener('click', handleScrollButtons);
+    document.addEventListener('click', handleProductActions);
+    document.querySelector('#wishlistToggle')?.addEventListener('click', handleWishlistToggle);
+    document.querySelector('#clearWishlist')?.addEventListener('click', clearWishlist);
+    document.querySelector('#stylistForm')?.addEventListener('submit', handleStylistSubmit);
+    document.querySelector('#silhouetteSelect')?.addEventListener('change', handleDesignUpdate);
+    document.querySelector('#fabricSelect')?.addEventListener('change', handleDesignUpdate);
+    document.querySelector('#sparkleToggle')?.addEventListener('change', handleDesignUpdate);
+    document.querySelector('#trainToggle')?.addEventListener('change', handleDesignUpdate);
+    document.querySelector('#colorSwatches')?.addEventListener('click', handleSwatchClick);
+    document.querySelector('#saveDesign')?.addEventListener('click', handleSaveDesign);
+    document.querySelector('#lookbookShuffle')?.addEventListener('click', handleLookbookShuffle);
+    document.querySelector('#journalShuffle')?.addEventListener('click', handleJournalShuffle);
+    document.querySelector('#testimonialPrev')?.addEventListener('click', () => handleTestimonialNav(-1));
+    document.querySelector('#testimonialNext')?.addEventListener('click', () => handleTestimonialNav(1));
+    document.querySelector('#bookingForm')?.addEventListener('submit', handleBookingSubmit);
+    document.querySelector('#newsletterForm')?.addEventListener('submit', handleNewsletterSubmit);
+    document.querySelector('#faqAccordion')?.addEventListener('click', handleFaqToggle);
+    document.querySelector('#themeToggle')?.addEventListener('click', handleThemeToggle);
+    document.querySelector('#backToTop')?.addEventListener('click', () => scrollToTarget('#top'));
+    handleDesignUpdate();
+
+    window.addEventListener('scroll', handleBackToTop);
+    handleBackToTop();
 };
 
-window.changePage = (page) => {
-  try {
-    app.changePage(page);
-  } catch (error) {
-    console.error('Error in changePage:', error);
-  }
-};
-
-window.selectSuggestion = (id) => {
-  try {
-    if (app.filterManager) {
-      app.filterManager.selectSuggestion(id);
-    }
-  } catch (error) {
-    console.error('Error in selectSuggestion:', error);
-  }
-};
-
-window.toggleFilters = () => FilterManager.toggleFilters();
-window.changeListPage = (type, page) => {
-  try {
-    if (app.pageLoader) {
-      app.changeListPage(type, page);
-    }
-  } catch (error) {
-    console.error('Error in changeListPage:', error);
-  }
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-  app.init();
-});
-// Make toggleAccordion available globally for inline onclick handlers
-window.toggleAccordion = (header) => {
-  if (app && app.toggleAccordion) {
-    app.toggleAccordion(header);
-  } else {
-    console.error('App not initialized yet');
-  }
-};
-
-// Log that the module has loaded
-console.log('app-main.js module loaded successfully');
+document.addEventListener('DOMContentLoaded', init);
