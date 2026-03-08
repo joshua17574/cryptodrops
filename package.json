@@ -1,1 +1,6 @@
-root-package-json
+{
+  "name": "cryptodrops-workspace",
+  "private": true,
+  "type": "module",
+  "workspaces": ["Cryptodrops"]
+}
