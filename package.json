@@ -1,6 +1,1 @@
-{
-  "name": "cryptodrops-workspace",
-  "private": true,
-  "type": "module",
-  "workspaces": ["Cryptodrops"]
-}
+ewogICJuYW1lIjogImNyeXB0b2Ryb3BzLXdvcmtzcGFjZSIsCiAgInByaXZhdGUiOiB0cnVlLAogICJ0eXBlIjogIm1vZHVsZSIsCiAgIndvcmtzcGFjZXMiOiBbIkNyeXB0b2Ryb3BzIl0KfQo=
